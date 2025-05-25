@@ -193,46 +193,6 @@ class Assignment:
         else:
             raise ValueError(f"Unknown attribute type: {type(attr)}")
 
-def satisfies_absolute_hint(assignment, hint):
-    """Check if assignment satisfies an absolute hint"""
-    attr1, attr2 = hint._attr1, hint._attr2
-    
-    floor1 = assignment.get_floor_of_attribute(attr1)
-    floor2 = assignment.get_floor_of_attribute(attr2)
-    
-    return floor1 == floor2
-
-def satisfies_relative_hint(assignment, hint):
-    """Check if assignment satisfies a relative hint"""
-    attr1, attr2 = hint._attr1, hint._attr2
-    difference = hint._difference
-    
-    floor1 = assignment.get_floor_of_attribute(attr1)
-    floor2 = assignment.get_floor_of_attribute(attr2)
-    
-    # attr1 + difference == attr2
-    # So floor1 + difference == floor2
-    return floor1 - difference == floor2
-
-def satisfies_neighbor_hint(assignment, hint):
-    """Check if assignment satisfies a neighbor hint"""
-    attr1, attr2 = hint._attr1, hint._attr2
-    
-    floor1 = assignment.get_floor_of_attribute(attr1)
-    floor2 = assignment.get_floor_of_attribute(attr2)
-    
-    return abs(floor1 - floor2) == 1
-
-def is_hint_consistent(hint):
-    """Validate that the hint itself is not logically contradictory."""
-    if isinstance(hint, RelativeHint):
-        a1, a2, diff = hint._attr1, hint._attr2, hint._difference
-        if isinstance(a1, Floor) and isinstance(a2, Floor):
-            return int(a1) - int(a2) == diff
-        if abs(diff) >= 5:
-            return False
-    return True  # AbsoluteHint and NeighborHint are always self-consistent
-
 def satisfies_all_hints(assignment, hints):
     """Check if assignment satisfies all given hints"""
     return all(h.satisfies(assignment) for h in hints)

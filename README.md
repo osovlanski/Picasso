@@ -2,25 +2,49 @@
 
 ## Overview
 
-This solution computes the number of valid assignments of animals and colors to five floors based on a list of logic hints. Each floor has one unique color and one unique animal. The logic supports three types of constraints: `AbsoluteHint`, `RelativeHint`, and `NeighborHint`.
+This solution calculates the number of valid assignments of **animals and colors** to five distinct floors, given a list of logic hints. Each floor must have **one unique animal and one unique color**. The problem involves interpreting and satisfying three types of logical hints:
 
-- Total search space: **5! × 5! = 14,400** combinations.
-- The program checks all combinations and filters those that satisfy the hints.
-- Polymorphic methods (`satisfies()` and `is_consistent()`) are defined on each `Hint` subclass for clean logic separation.
+- `AbsoluteHint`: Enforces that two attributes are assigned to the same floor.
+- `RelativeHint`: Enforces a fixed floor difference between two attributes.
+- `NeighborHint`: Enforces that two attributes are placed on adjacent floors.
 
-## Design Decisions
+## Problem Space
 
-- Used **brute-force with filtering** due to the small problem space (as allowed by the instructions).
-- Refactored logic to use **OOP and polymorphism** instead of `if isinstance(...)` checks or dispatch tables.
-- Hints with contradictory or invalid structure are filtered early using `is_consistent()`.
+- Total number of possible assignments (without constraints): **5! × 5! = 14,400**
+- The goal is to filter and count only the assignments that satisfy all given hints.
+
+## Algorithmic Strategy
+
+This solution combines **constraint propagation** and **filtered permutation evaluation** for optimal performance:
+
+### 1. Constraint Propagation
+
+- Each `Hint` implements a `propagate()` method.
+- During propagation, possible floor assignments are narrowed down for each color and animal.
+- If any constraint reduces an attribute to a single valid floor, it is assigned immediately.
+- Propagation continues until no more domains change (fixpoint).
+
+### 2. Permutation-Based Assignment Validation
+
+- After propagation, if any unassigned floors remain, permutations of remaining colors and animals are generated.
+- For each permutation, the full assignment is tested using `satisfies()` from each `Hint` subclass.
+- This stage ensures correctness while avoiding unnecessary evaluation paths eliminated during propagation.
+
+## Design Principles
+
+- Clean **object-oriented design** using:
+  - `Picasso` for domain tracking and assignments.
+  - `Hint` subclasses for encapsulating logic and validation.
+  - `FloorsAssignment` to abstract read-only, complete state for validation.
+- All constraint logic is polymorphic (no `if isinstance()` checks).
+- Early detection of conflicting hints using `is_consistent()`.
 
 ## How to Run
 
-Run the Python script directly:
+Run the script directly using:
 
 ```bash
-python picasso_tower.py
-```
+python count_assignments.py
 
 ## Output
 
